@@ -1,4 +1,9 @@
-@import "tailwindcss";
+@import "tailwindcss" source(none);
+
+@source "../app";
+@source "../components";
+@source "../lib";
+@source "../../content";
 
 /* next-themes writes `class="dark"` on <html>, so wire Tailwind's dark variant to it. */
 @custom-variant dark (&:where(.dark, .dark *));

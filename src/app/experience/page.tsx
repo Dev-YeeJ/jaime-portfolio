@@ -13,6 +13,7 @@ import { PageHeader } from "@/components/page-header";
 import { Reveal, Stagger, StaggerItem } from "@/components/motion";
 import Link from "next/link";
 import { buttonClass, Section, SectionHeading, Tag } from "@/components/ui";
+import { PdfModal } from "@/components/pdf-modal";
 
 export const metadata: Metadata = {
   title: "Experience",
@@ -207,7 +208,13 @@ export default function ExperiencePage() {
                 {certifications.map((certification) => (
                   <li key={certification.title}>
                     <h3 className="font-display text-[17px] font-semibold tracking-tight">
-                      {certification.title}
+                      {certification.href ? (
+                        <PdfModal title={certification.title} href={certification.href}>
+                          {certification.title}
+                        </PdfModal>
+                      ) : (
+                        certification.title
+                      )}
                     </h3>
                     <p className="mt-1 text-[14px] text-muted">
                       {certification.org} — {certification.detail}

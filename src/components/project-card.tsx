@@ -2,6 +2,7 @@ import { ArrowUpRight } from "lucide-react";
 import clsx from "clsx";
 import type { Project } from "@/lib/content";
 import { ImagePlaceholder } from "@/components/image-placeholder";
+import { LottiePlayer } from "@/components/lottie-player";
 import { StatusBadge, Tag } from "@/components/ui";
 
 export function ProjectCard({ project, className }: { project: Project; className?: string }) {
@@ -20,12 +21,21 @@ export function ProjectCard({ project, className }: { project: Project; classNam
           Swap for <Image src={…} alt={…} fill sizes="(min-width:1024px) 33vw, 100vw"
           className="object-cover" /> — the frame already owns the ratio.
         */}
-        <ImagePlaceholder
-          label={project.imageLabel}
-          ratio={project.imageRatio}
-          className="rounded-none border-0"
-          captionInside
-        />
+        {project.lottieSrc ? (
+          <div
+            className="relative w-full overflow-hidden bg-transparent"
+            style={{ aspectRatio: project.imageRatio }}
+          >
+            <LottiePlayer src={project.lottieSrc} />
+          </div>
+        ) : (
+          <ImagePlaceholder
+            label={project.imageLabel}
+            ratio={project.imageRatio}
+            className="rounded-none border-0"
+            captionInside
+          />
+        )}
       </div>
 
       <div className="flex flex-1 flex-col p-5 md:p-6">

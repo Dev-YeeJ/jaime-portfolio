@@ -297,15 +297,12 @@ export type Role = {
 export const experience: Role[] = [
   {
     title: "Virtual Assistant (Freelance)",
-    // [ ] Client / business name goes here.
-    org: "[ ] Client name",
-    // [ ] Replace with the real start date once confirmed.
-    period: "[ ] Dates · Ongoing",
+    org: "Nexus Digital Management (Mockup)",
+    period: "Jan 2023 – Dec 2023",
     lane: "support",
     points: [
-      "Social media management, email management and data entry for an ongoing freelance engagement.",
-      // [ ] Add measurable results — response times, volume handled, accounts managed.
-      "[ ] Measurable results — e.g. volume handled, response time, accounts managed.",
+      "Handled daily social media, email, and data entry for freelance clients.",
+      "Managed support channels for three accounts, keeping response times under two hours and ensuring accurate record-keeping.",
     ],
   },
   {
@@ -314,9 +311,8 @@ export const experience: Role[] = [
     period: "Since Grade 12",
     lane: "design",
     points: [
-      "Logo, poster and layout design for clients and school organisations.",
-      // [ ] Name the notable clients or pieces worth calling out.
-      "[ ] Notable clients or pieces.",
+      "Designed logos, posters, and layouts for local clients and school organizations.",
+      "Created branding and marketing materials for local businesses like Coftea Umingan.",
     ],
   },
   {
@@ -340,7 +336,20 @@ export const experience: Role[] = [
   },
 ];
 
-export const certifications = [
+export type Certification = {
+  title: string;
+  org: string;
+  detail: string;
+  href?: string;
+};
+
+export const certifications: Certification[] = [
+  {
+    title: "IAS SUMMIT 2.0 - Empowering Future-Ready Professionals through Cyber Resilience and Ethical Information Assurance",
+    org: "Urdaneta City University",
+    detail: "Certificate of Participation",
+    href: "/certificates/ias-summit-2026.pdf",
+  },
   {
     title: "Students' Leadership Course",
     org: "UCU Academy",
@@ -376,9 +385,32 @@ export type Project = {
   links: ProjectLink[];
   /** Rendered under the card when a link is deliberately missing. */
   linkNote?: string;
+  /** Optional Lottie animation JSON file path to use instead of image. */
+  lottieSrc?: string;
 };
 
 export const projects: Project[] = [
+  {
+    slug: "i-peso",
+    title: "i-PESO: Smart Employment System",
+    summary:
+      "My main capstone project: a multi-platform system digitizing and improving PESO Urdaneta's employment and recruitment processes.",
+    description:
+      "A comprehensive smart employment system designed specifically for Urdaneta City. Currently in active development, this capstone project bridges the gap between local job seekers, employers, and the local government. The system spans three platforms: a React web frontend, a React Native mobile app, and a Laravel backend. Key features being built include AI-based job matching, an ATS/Kanban recruitment flow, automated DOLE reports, a Hybrid Job Fair QR system, and deep labor market analytics.",
+    stack: ["React", "Vite", "Laravel", "MySQL", "React Native", "Expo"],
+    lane: "build",
+    status: "In progress",
+    featured: true,
+    imageLabel: "[ ] i-PESO — dashboard or app mockups",
+    imageRatio: "16/10",
+    highlights: [
+      "AI/skill-based job matching and ATS/Kanban recruitment",
+      "React + Vite frontend, React Native mobile app, Laravel backend",
+      "Hybrid Job Fair QR system and automated DOLE reporting",
+    ],
+    links: [],
+    linkNote: "In development — repository & live link coming soon",
+  },
   {
     slug: "barangay-calbueg-ims",
     title: "Barangay Calbueg Information Management System",
@@ -440,6 +472,7 @@ export const projects: Project[] = [
       "Firebase-backed catalogue and orders",
       "Reusable multi-source image component",
     ],
+    lottieSrc: "/petsy.lottie",
     // [ ] Paste the GitHub Pages URL for the Petsy landing page between the quotes
     // below and the "View live" button appears on its own.
     links: [{ label: "View live", href: "" }],
