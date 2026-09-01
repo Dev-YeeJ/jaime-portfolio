@@ -8,12 +8,17 @@
  * self-hosted, and no local image optimization. The hero portrait is the LCP
  * element, so losing image optimization is not an acceptable trade here.
  *
- * `name` is also the *.workers.dev subdomain and the service name referenced by
- * WORKER_SELF_REFERENCE below — keep the three in sync if it is ever renamed.
+ * `name` must match the Worker that Cloudflare actually created, which Workers
+ * Builds names after the repository — `jaime-portfolio`, not the site's domain.
+ * It is also the *.workers.dev subdomain and the target of the
+ * WORKER_SELF_REFERENCE binding below, so all three move together. Getting this
+ * wrong fails only at the deploy step, after a green build, with
+ * "Service binding 'WORKER_SELF_REFERENCE' references Worker '<x>' which was not
+ * found."
  */
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "jaimeyee",
+  "name": "jaime-portfolio",
   "main": ".open-next/worker.js",
 
   // Matches the installed workerd (1.20260828.1). Do not set this past the
@@ -33,7 +38,7 @@
   "services": [
     {
       "binding": "WORKER_SELF_REFERENCE",
-      "service": "jaimeyee"
+      "service": "jaime-portfolio"
     }
   ],
 

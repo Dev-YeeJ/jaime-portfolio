@@ -55,15 +55,17 @@ reports the zone **Active**.
 
    | Field | Value |
    | --- | --- |
-   | Project name | `jaimeyee` |
+   | Project name | `jaime-portfolio` |
    | Production branch | `main` |
    | Build command | `npm run build:cf` |
    | Deploy command | `npx opennextjs-cloudflare deploy` |
    | Build output directory | *(leave empty)* |
 
-   The project name must stay `jaimeyee` — it matches `name` and the
-   `WORKER_SELF_REFERENCE` service binding in `wrangler.jsonc`. Renaming one
-   means renaming all three.
+   Workers Builds names the Worker after the repository, so it must stay
+   `jaime-portfolio` — matching `name` and the `WORKER_SELF_REFERENCE` service
+   binding in `wrangler.jsonc`. A mismatch passes the build and then fails at
+   deploy with "Service binding 'WORKER_SELF_REFERENCE' references Worker
+   '<name>' which was not found."
 
 4. **Save and Deploy.**
 
@@ -81,7 +83,7 @@ own preview URL.
 
 Once the zone is **Active** and the first deploy is green:
 
-1. Open the `jaimeyee` Worker → **Settings** → **Domains & Routes** → **Add** →
+1. Open the `jaime-portfolio` Worker → **Settings** → **Domains & Routes** → **Add** →
    **Custom domain**.
 2. Add `jaimeyee.online`. Add `www.jaimeyee.online` too if you want it.
 
