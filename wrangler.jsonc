@@ -1,0 +1,43 @@
+/**
+ * Cloudflare Workers config for the portfolio.
+ *
+ * The site is served by the OpenNext adapter, which compiles the real `next build`
+ * output into a Worker. That is deliberate: Cloudflare's newer `vinext` path
+ * reimplements the Next.js API surface, and its own compatibility check flagged
+ * two regressions for this site — Google Fonts loaded from a CDN instead of being
+ * self-hosted, and no local image optimization. The hero portrait is the LCP
+ * element, so losing image optimization is not an acceptable trade here.
+ *
+ * `name` is also the *.workers.dev subdomain and the service name referenced by
+ * WORKER_SELF_REFERENCE below — keep the three in sync if it is ever renamed.
+ */
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "jaimeyee",
+  "main": ".open-next/worker.js",
+
+  // Matches the installed workerd (1.20260828.1). Do not set this past the
+  // runtime's own build date or Wrangler refuses to start.
+  "compatibility_date": "2026-08-28",
+
+  // Both are required by the adapter: `nodejs_compat` for Node built-ins used by
+  // the Next.js server, `global_fetch_strictly_public` so server-side fetches to
+  // this same site go over the public internet rather than looping internally.
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+
+  "services": [
+    {
+      "binding": "WORKER_SELF_REFERENCE",
+      "service": "jaimeyee"
+    }
+  ],
+
+  "observability": {
+    "enabled": true
+  }
+}

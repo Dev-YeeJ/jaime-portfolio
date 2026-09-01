@@ -1,0 +1,82 @@
+---
+title: "Prepping for a CLI-only Packet Tracer competition"
+description: "No GUI, a running clock, and a topology you have never seen. What actually makes the difference when you compete in the Computer Network category."
+date: "2026-04-12"
+lane: "build"
+tags: ["Networking", "Cisco", "Packet Tracer", "Competition"]
+---
+
+I've competed twice in the Computer Network category — the 13th and 14th IT Olympics — and both times the format was the same shape: a topology you haven't seen, a list of requirements, a clock, and Packet Tracer with the GUI shortcuts off the table.
+
+Everything happens in the CLI. Here's what I learned preparing for that, most of which is not about knowing more commands.
+
+## Speed comes from sequence, not from typing
+
+The instinct is to get faster at typing. That's the wrong lever. You lose time to hesitation and to backtracking, not to keystrokes.
+
+What fixes it is a fixed order you follow every single time, so you're never deciding what to do next while the clock runs:
+
+1. Read the *whole* requirement sheet before touching anything.
+2. Sketch the addressing plan on paper — subnets, gateways, VLAN IDs.
+3. Hostnames and basic device config on everything.
+4. Layer 2: VLANs, access ports, trunks.
+5. Layer 3: interfaces, addressing, inter-VLAN routing.
+6. Routing protocol.
+7. Services: DHCP, NAT, ACLs.
+8. Verify, then save.
+
+The order matters because each step depends on the one before it. Configuring DHCP before the interfaces exist means coming back. Coming back is where the time goes.
+
+## Do the subnetting on paper first
+
+This is the single highest-leverage habit.
+
+Working out a VLSM plan in your head while typing `ip address` commands guarantees you'll transpose something, and a wrong mask on a gateway interface produces a symptom three steps later that looks like a routing problem. Then you debug routing for six minutes.
+
+Five minutes with a pen at the start — network address, usable range, broadcast, gateway, mask, per subnet — is five minutes that buys back fifteen.
+
+## Know the verification commands better than the config commands
+
+Anyone preparing has drilled the configuration commands. Fewer people drill the checks, and the checks are what turn a wrong answer into a right one before submission.
+
+The ones I lean on constantly:
+
+```
+show ip interface brief
+show vlan brief
+show interfaces trunk
+show ip route
+show running-config | section interface
+show ip dhcp binding
+show access-lists
+```
+
+`show ip interface brief` is the workhorse. Two columns, and it tells you instantly whether a port is administratively down, physically down, or up but unaddressed — three completely different problems that all look like "it doesn't work."
+
+`show running-config | section` is the underrated one. Piping the config saves scrolling through hundreds of lines to confirm one interface.
+
+## The mistakes that actually cost points
+
+From doing this twice, the recurring ones:
+
+- **Forgetting `no shutdown`.** Router interfaces come up administratively down. It's the most embarrassing five minutes you can lose.
+- **Trunk mismatch.** Both sides must agree on encapsulation and allowed VLANs. One side on access is a silent failure.
+- **The native VLAN.** Mismatched native VLANs across a trunk produce behaviour that looks like a routing fault.
+- **ACL direction and order.** An access list applied `in` where it should be `out` is a functional but wrong answer. And the implicit deny at the end catches everyone at least once.
+- **Not saving.** `copy running-config startup-config`. If the scenario says persistence, an unsaved config is a zero, no matter how correct it was.
+
+## Build the muscle memory somewhere it's cheap
+
+The preparation that helped most wasn't reading. It was rebuilding the same medium-sized topology from a blank file, over and over, until the sequence above ran without thinking.
+
+Same topology, different addressing each time. The repetition is the point: you're not learning the topology, you're learning the order and the syntax so thoroughly that the competition's unfamiliar layout is the only new variable.
+
+Then a deliberate variation: give yourself a broken config and find the fault. Diagnosis is a different skill from configuration, and competitions test both.
+
+## Why this is worth doing even if you don't compete
+
+I'm mostly a web and mobile developer. Very little of my day-to-day involves a Cisco CLI.
+
+But the habits transfer completely. Read the whole spec first. Work the model out before you start typing. Know your verification tools better than your creation tools. Have a fixed order so you spend your thinking on the problem and not on what to do next.
+
+That's the same discipline as debugging a Laravel application or tracking down why a Flutter widget rebuilds. The competition just puts a clock on it.

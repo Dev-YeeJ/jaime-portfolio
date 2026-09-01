@@ -12,6 +12,13 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Cloudflare/OpenNext build output. `.wrangler` holds generated bundle
+    // facades that trip no-unused-vars, and neither directory is source.
+    ".open-next/**",
+    ".wrangler/**",
+    "cloudflare-env.d.ts",
+    // Emitted by scripts/generate-blog-data.mjs from content/blog/*.mdx.
+    "src/lib/blog-data.generated.ts",
   ]),
 ]);
 

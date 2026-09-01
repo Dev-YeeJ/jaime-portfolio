@@ -1,0 +1,107 @@
+---
+title: "Building Petsy: lessons from a Flutter + Firebase e-commerce app"
+description: "Two apps in one codebase, a Firebase data model that had to survive an admin panel, and the small reusable widget that quietly removed a whole category of bugs."
+date: "2026-06-15"
+lane: "build"
+tags: ["Flutter", "Dart", "Firebase", "Mobile"]
+---
+
+Petsy is an e-commerce app for pet products, built in Flutter with Firebase behind it. It has two faces: a customer storefront for browsing and ordering, and an admin dashboard for managing the catalogue. Both ship from the same codebase.
+
+That last sentence is the whole story of the project, and most of what I learned came out of it.
+
+## One codebase, two audiences
+
+The obvious approach is two apps. It's also the approach that means every model, every Firebase call and every piece of formatting gets written twice and then drifts.
+
+Keeping both in one codebase means the shared layer is genuinely shared — the product model, the Firestore access, the currency and date formatting, the image handling. What differs is routing and permissions: which screens a user can reach, and what they're allowed to write.
+
+The cost is discipline. It becomes very easy to let an admin-only concern leak into a widget the customer side also renders. The rule I settled on is that shared widgets take data and callbacks, never roles. A widget should never contain `if (isAdmin)`. The screen decides what to hand it.
+
+```dart
+// Shared: knows nothing about who is looking at it.
+class ProductTile extends StatelessWidget {
+  const ProductTile({
+    super.key,
+    required this.product,
+    this.onTap,
+    this.trailing,
+  });
+
+  final Product product;
+  final VoidCallback? onTap;
+  final Widget? trailing;
+  // ...
+}
+```
+
+The admin screen passes an edit button as `trailing`. The storefront passes nothing. The tile never learns the difference.
+
+## The multi-source image problem
+
+The bug that kept coming back was images.
+
+A product image in Petsy can arrive from three places: a network URL for something already uploaded, a bundled asset for placeholders and seed data, or a local file that an admin has just picked and hasn't uploaded yet. Each needs a different Flutter widget — `Image.network`, `Image.asset`, `Image.file` — and each fails differently. A dead URL throws at paint time. A missing asset throws at build time. A file path from the gallery can be valid on Android and meaningless after an app restart.
+
+Scattered across a dozen screens, that's a dozen places to forget an error builder.
+
+So it became one widget:
+
+```dart
+enum ImageSourceKind { network, asset, file }
+
+class AppImage extends StatelessWidget {
+  const AppImage({
+    super.key,
+    required this.path,
+    this.fit = BoxFit.cover,
+  });
+
+  final String path;
+  final BoxFit fit;
+
+  ImageSourceKind get _kind {
+    if (path.startsWith('http')) return ImageSourceKind.network;
+    if (path.startsWith('assets/')) return ImageSourceKind.asset;
+    return ImageSourceKind.file;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    switch (_kind) {
+      case ImageSourceKind.network:
+        return Image.network(path, fit: fit, errorBuilder: _fallback);
+      case ImageSourceKind.asset:
+        return Image.asset(path, fit: fit, errorBuilder: _fallback);
+      case ImageSourceKind.file:
+        return Image.file(File(path), fit: fit, errorBuilder: _fallback);
+    }
+  }
+}
+```
+
+The interesting part isn't the switch. It's that `_fallback` is defined once. Every image in the app now degrades the same way, and adding a fourth source later is one case, not a search across the project.
+
+This is the lesson I'd carry into any project: **when the same three-line workaround appears in more than two files, it isn't a workaround any more, it's a missing component.**
+
+## Firestore is not a relational database, and pretending otherwise hurts
+
+Coming from Laravel and MySQL, my instinct was to normalise. Products in one collection, categories in another, orders referencing both by ID, and joins reconstructed in the client.
+
+That works right up until a product list needs a category name, and suddenly rendering twenty tiles is twenty extra reads.
+
+The fix is duplication that would be a crime in SQL: store the category name *on the product document*, alongside the ID. Yes, renaming a category now means a write across its products. That happens rarely. Listing products happens constantly. Optimise for the read.
+
+What that taught me is that the "correct" data model is a function of the database's cost model, not a universal truth. I had been carrying a MySQL-shaped instinct into a document store.
+
+## What I'd do differently
+
+**Set up the admin side first.** I built the storefront first because it's the fun part, then discovered the admin panel needed fields the model didn't have. Building the management surface first forces the data model to be honest early.
+
+**Take state management seriously from day one.** Petsy's state grew organically, and by the end there were places where a widget rebuilt more than it needed to. Deciding the pattern before there are forty widgets is much cheaper than deciding it after.
+
+**Treat empty and error states as real screens.** An empty cart, a failed order, no search results — these got designed last, which is exactly backwards, because they're the moments a user is most likely to leave.
+
+## Where it stands
+
+Petsy ships the storefront and the admin dashboard, backed by Firebase, with the image component above quietly doing its job across both. The [project page](/projects) has the summary, and the design work that went alongside it — the logo, the app icon, the colour and type — is in the [gallery](/design?category=petsy).

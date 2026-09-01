@@ -1,0 +1,67 @@
+---
+title: "Designing Captura: turning a booking flow into something a photographer would actually want to use"
+description: "A booking app is a form with extra steps unless you get the order right. How Captura sequences portfolio, packages and booking — and why the portfolio comes first."
+date: "2026-05-20"
+lane: "design"
+tags: ["UI/UX", "Flutter", "Product Design"]
+---
+
+Captura is a booking app concept for photography and videography services, built in Flutter. Four things: browse a portfolio, look at packages, make a booking, get in touch.
+
+Written down like that it sounds like a solved problem. It isn't, because the order of those four things decides whether the app feels like a portfolio or a checkout.
+
+## The default design is a price list
+
+Almost every service booking app opens the same way: pick a service, pick a date, pay. It's efficient, and for a haircut it's correct — you already know what you're buying.
+
+Photography isn't that. Nobody books a photographer because a package costs ₱X. They book because they saw work they wanted for themselves. Price is the second question, and if your app asks it first, you've made the client evaluate you on the only axis where every photographer looks the same.
+
+So Captura opens on the work. The portfolio is the home screen, not a tab you find later.
+
+## Sequencing the flow
+
+The flow I settled on:
+
+1. **Portfolio.** Full-bleed imagery, minimal chrome, browsable by the kind of shoot. This is the pitch.
+2. **Packages.** Reached from a piece of work, not from a menu. You arrive here already wanting something.
+3. **Booking.** Date, details, confirmation. Short, because the decision was made two screens ago.
+4. **Contact.** Always available, because some clients want to talk to a person before committing to anything, and refusing them that is how you lose them.
+
+The important move is step two: **you enter the price list from the work, not the other way around.** Tapping a shoot you like and seeing "this kind of thing is in the Portrait package" answers "what does this cost" in the context where the answer feels justified.
+
+## Chrome that gets out of the way
+
+Once you decide the imagery is the pitch, the interface's job becomes staying out of its way.
+
+Things I cut:
+
+- **Filter chips over the portfolio grid.** They fragment the visual field of the one screen that has to sell. Categorisation moved into the scroll instead — sections with quiet headers.
+- **A visible progress indicator on the booking flow.** Three steps don't need a stepper. A stepper on three steps makes it feel like six.
+- **Card shadows on the portfolio tiles.** Shadows on top of photographs are noise. Gaps do the separating.
+
+Things I kept:
+
+- **A persistent, low-contrast contact affordance.** It costs almost nothing visually and catches the client who wants to ask before booking.
+- **Generous spacing around packages.** Price is where hesitation happens, and cramped layouts amplify it.
+
+## The splash screen
+
+Captura opens with a brief branded splash before the portfolio loads.
+
+Splash screens have a bad reputation, and mostly they deserve it — a company logo held for three seconds is a toll booth. But a short one, under two seconds, does something real for an app whose whole proposition is visual taste: it sets a tone before the first photograph arrives, the way a title card sets a film.
+
+The rules I gave it were: never longer than the content takes to be ready, never a blocker for something that could have loaded underneath it, and skippable in spirit — it should be gone before anyone thinks about skipping it.
+
+That pattern is why the site you're reading opens the way it does. The intro here is the same idea: a mark, a rule, and then it lifts to reveal the name it was standing in for. It plays once per session, it never delays fonts or content, and it's skipped entirely if your system asks for reduced motion.
+
+## Designing for a build you'll do yourself
+
+Captura is a concept, but I designed it knowing I'd be the one implementing it in Flutter. That changes decisions in useful ways.
+
+You stop drawing things that will fight the framework — custom transitions Flutter makes awkward, layouts that need a bespoke render object for no reason. And you stop hand-waving the states that don't appear in a pretty mockup: what the portfolio looks like with four items instead of forty, what a booking looks like when the date is unavailable, what happens with no connection.
+
+Designers who never build learn about those states in code review. Designers who build think about them at the wireframe stage, because they know who's going to have to solve them.
+
+## Where it sits
+
+Captura is still a concept — the screens and the flow, not a shipped product. It's on the [projects page](/projects), and the screens are in the [gallery](/design?category=uiux).

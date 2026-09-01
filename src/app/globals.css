@@ -1,26 +1,508 @@
 @import "tailwindcss";
 
+/* next-themes writes `class="dark"` on <html>, so wire Tailwind's dark variant to it. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ---------------------------------------------------------------------------
+   Palette — a white canvas with blue doing all the work.
+   Blue only ever covers small, deliberate areas: buttons, badges, borders,
+   icons, the cursor, and the ambient field. Never a full-bleed accent fill.
+--------------------------------------------------------------------------- */
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --background-soft: #f5f8ff;
+  --foreground: #0f172a;
+  --muted: #64748b;
+  --border: #e2e8f0;
+  --accent: #2563eb;
+  --accent-deep: #1e3a8a;
+  --accent-tint: #eff6ff;
+  --accent-foreground: #ffffff;
+
+  /* Derived tokens (kept here so light/dark stay in one place) */
+  --dot: rgba(37, 99, 235, 0.14);
+  --wash-a: rgba(37, 99, 235, 0.1);
+  --wash-b: rgba(30, 58, 138, 0.08);
+  --lift-shadow: 0 12px 32px -12px rgba(37, 99, 235, 0.28);
+  --card-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  /* Traces the cut-out's alpha, so it must be tuned per theme: a navy shadow is
+     invisible on a navy background. */
+  --figure-shadow: drop-shadow(0 18px 28px rgba(15, 23, 42, 0.18));
+}
+
+.dark {
+  --background: #0b1220;
+  --background-soft: #111a2e;
+  --foreground: #f1f5f9;
+  --muted: #94a3b8;
+  --border: #1e293b;
+  --accent: #60a5fa;
+  --accent-deep: #93c5fd;
+  --accent-tint: #16233f;
+  --accent-foreground: #0b1220;
+
+  --dot: rgba(96, 165, 250, 0.16);
+  --wash-a: rgba(96, 165, 250, 0.12);
+  --wash-b: rgba(37, 99, 235, 0.12);
+  --lift-shadow: 0 12px 32px -12px rgba(96, 165, 250, 0.24);
+  --card-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  /* Deeper and tighter on dark, plus a faint cool rim so a light-clothed subject
+     still separates from the background instead of dissolving into it. */
+  --figure-shadow: drop-shadow(0 16px 24px rgba(0, 0, 0, 0.55))
+    drop-shadow(0 0 1px rgba(148, 197, 253, 0.35));
 }
 
 @theme inline {
   --color-background: var(--background);
+  --color-background-soft: var(--background-soft);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-accent: var(--accent);
+  --color-accent-deep: var(--accent-deep);
+  --color-accent-tint: var(--accent-tint);
+  --color-accent-foreground: var(--accent-foreground);
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, monospace;
+  --font-display: var(--font-bricolage), var(--font-geist-sans), sans-serif;
+  --font-nameplate: var(--font-anton), var(--font-geist-sans), sans-serif;
+
+  /* One easing curve for the whole site keeps motion feeling authored. */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+
+  html {
+    scroll-behavior: smooth;
+    /* Clears the floating pill nav when jumping to an anchor. */
+    scroll-padding-top: 7rem;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    font-feature-settings: "cv11", "ss01";
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background-color: var(--accent);
+    color: var(--accent-foreground);
+  }
+
+  /* A single, consistent keyboard focus treatment everywhere. The outline
+     inherits each element's own radius, so pills stay pills on focus. */
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  /* The custom cursor hides the native one only while it is actually mounted. */
+  html[data-cursor="custom"],
+  html[data-cursor="custom"] * {
+    cursor: none !important;
+  }
+
+  /* …except in text fields, where losing the I-beam costs more than the effect
+     is worth. The custom dot hides itself over these instead. */
+  html[data-cursor="custom"] input,
+  html[data-cursor="custom"] textarea {
+    cursor: auto !important;
+  }
+
+  html[data-cursor="custom"] select {
+    cursor: pointer !important;
   }
 }
 
-body {
-  background: var(--background);
+@layer utilities {
+  .container-page {
+    width: 100%;
+    max-width: 76rem;
+    margin-inline: auto;
+    padding-inline: 1.5rem;
+  }
+
+  @media (min-width: 768px) {
+    .container-page {
+      padding-inline: 2.5rem;
+    }
+  }
+
+  /* Small mono labels — eyebrows, lane names, tags. Always accent blue. */
+  .label {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    line-height: 1;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .font-nameplate {
+    font-family: var(--font-nameplate);
+  }
+
+  .prose-measure {
+    max-width: 68ch;
+  }
+
+  /* Ambient field: a fine engineering dot grid, faded out at the edges so it
+     never reads as a tiled pattern. Zero DOM cost — one painted element. */
+  .dot-field {
+    background-image: radial-gradient(circle at 1px 1px, var(--dot) 1px, transparent 0);
+    background-size: 30px 30px;
+    -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, #000 0%, transparent 100%);
+    mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, #000 0%, transparent 100%);
+  }
+
+  .card-surface {
+    background-color: var(--background);
+    border: 1px solid var(--border);
+    box-shadow: var(--card-shadow);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Ambient washes. Transform/opacity only, so they stay on the compositor.
+-------------------------------------------------------------------------- */
+@keyframes drift-a {
+  0%,
+  100% {
+    transform: translate3d(-6%, -4%, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(6%, 5%, 0) scale(1.12);
+  }
+}
+
+@keyframes drift-b {
+  0%,
+  100% {
+    transform: translate3d(5%, 6%, 0) scale(1.08);
+  }
+  50% {
+    transform: translate3d(-5%, -5%, 0) scale(1);
+  }
+}
+
+.wash-a {
+  background: radial-gradient(circle at center, var(--wash-a), transparent 68%);
+  animation: drift-a 26s var(--ease-out-expo) infinite;
+}
+
+.wash-b {
+  background: radial-gradient(circle at center, var(--wash-b), transparent 68%);
+  animation: drift-b 34s var(--ease-out-expo) infinite;
+}
+
+/* --------------------------------------------------------------------------
+   Code blocks. A deliberately monochrome-blue highlight theme instead of a
+   stock rainbow one, so code samples obey the same "blue only" colour rule as
+   the rest of the site.
+-------------------------------------------------------------------------- */
+.mdx-body pre {
+  background-color: var(--background-soft);
+  border: 1px solid var(--border);
+  border-radius: 0.875rem;
+  padding: 1.25rem 1.25rem;
+  overflow-x: auto;
+  font-size: 0.8125rem;
+  line-height: 1.7;
+}
+
+.mdx-body pre code {
+  font-family: var(--font-mono);
+  background: none;
+  padding: 0;
+  border: 0;
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+}
+
+.mdx-body :not(pre) > code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  background-color: var(--accent-tint);
+  color: var(--accent-deep);
+  border-radius: 0.375rem;
+  padding: 0.15em 0.4em;
+}
+
+.dark .mdx-body :not(pre) > code {
+  color: var(--accent-deep);
+}
+
+.hljs-comment,
+.hljs-quote {
+  color: var(--muted);
+  font-style: italic;
+}
+
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-literal,
+.hljs-doctag {
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.hljs-string,
+.hljs-regexp,
+.hljs-addition {
+  color: var(--accent-deep);
+}
+
+.dark .hljs-string,
+.dark .hljs-regexp,
+.dark .hljs-addition {
+  color: #a5c9ff;
+}
+
+.hljs-title,
+.hljs-title.class_,
+.hljs-title.function_,
+.hljs-section,
+.hljs-name {
+  color: var(--foreground);
+  font-weight: 600;
+}
+
+.hljs-attr,
+.hljs-attribute,
+.hljs-variable,
+.hljs-template-variable,
+.hljs-property {
+  color: var(--muted);
+}
+
+.hljs-number,
+.hljs-built_in,
+.hljs-type,
+.hljs-symbol {
+  color: var(--accent);
+}
+
+.hljs-meta,
+.hljs-punctuation {
+  color: var(--muted);
+}
+
+.hljs-emphasis {
+  font-style: italic;
+}
+.hljs-strong {
+  font-weight: 700;
+}
+
+/* --------------------------------------------------------------------------
+   Reduced motion. Ambient drift stops, transform-based reveals are neutralised
+   at the source (components read useReducedMotion), and anything left over is
+   collapsed here as a backstop.
+-------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .wash-a,
+  .wash-b {
+    animation: none !important;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Shared interaction vocabulary. Three verbs, used everywhere:
+   1. reveal  — fade + rise on scroll (Framer Motion, see components/motion.tsx)
+   2. wipe    — a hairline growing from the left (links, rules, lane rail)
+   3. lift    — a small rise plus a blue-tinted shadow on hover
+-------------------------------------------------------------------------- */
+@layer utilities {
+  .link-underline {
+    position: relative;
+  }
+
+  .link-underline::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -2px;
+    height: 1px;
+    background-color: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.45s var(--ease-out-expo);
+  }
+
+  .link-underline:hover::after,
+  .link-underline:focus-visible::after {
+    transform: scaleX(1);
+  }
+
+  .lift {
+    transition:
+      transform 0.35s var(--ease-out-expo),
+      box-shadow 0.35s var(--ease-out-expo),
+      border-color 0.35s var(--ease-out-expo);
+  }
+
+  .lift:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--lift-shadow);
+    border-color: color-mix(in srgb, var(--accent) 35%, var(--border));
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .lift:hover {
+      transform: none;
+    }
+
+    .link-underline::after {
+      transition: none;
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Intro + hero entrance.
+
+   Deliberately CSS-driven rather than JS-driven. Two reasons:
+   1. The overlay is gated by an inline script that runs before first paint, so
+      a returning visitor never sees a flash of it.
+   2. With JavaScript unavailable the hero still animates in and, more
+      importantly, is still visible — which would not be true of a Framer
+      Motion `initial={{ opacity: 0 }}`.
+
+   The hero reads `--hero-delay`, which the intro pushes back so the two read as
+   one continuous sequence: the mark lifts away and the name rises into its place.
+-------------------------------------------------------------------------- */
+:root {
+  --hero-delay: 0.15s;
+}
+
+.intro-overlay {
+  display: none;
+}
+
+html[data-intro="play"] {
+  --hero-delay: 1.02s;
+}
+
+html[data-intro="play"] .intro-overlay {
+  display: flex;
+  animation: intro-out 0.5s var(--ease-out-expo) 0.9s forwards;
+}
+
+html[data-intro="play"] .intro-mark {
+  animation: intro-mark-in 0.6s var(--ease-out-expo) both;
+}
+
+html[data-intro="play"] .intro-rule {
+  animation: intro-rule-in 0.65s var(--ease-out-expo) 0.28s both;
+}
+
+html[data-intro="play"] .intro-caption {
+  animation: intro-fade-in 0.5s var(--ease-out-expo) 0.42s both;
+}
+
+@keyframes intro-out {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+@keyframes intro-mark-in {
+  from {
+    opacity: 0;
+    transform: scale(0.94) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes intro-rule-in {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes intro-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Staggered hero entrance. Set --i on each element to order it. */
+.hero-in {
+  animation: hero-in 0.8s var(--ease-out-expo) both;
+  animation-delay: calc(var(--hero-delay) + var(--i, 0) * 0.08s);
+}
+
+@keyframes hero-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* The nameplate rises out of its own baseline — the wipe gesture at full size. */
+.name-line {
+  display: block;
+  animation: name-rise 0.95s var(--ease-out-expo) both;
+  animation-delay: calc(var(--hero-delay) + var(--i, 0) * 0.09s);
+}
+
+@keyframes name-rise {
+  from {
+    transform: translateY(120%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+/* The cut-out figure rises into place and settles in front of the nameplate.
+   It lands last, so the name is already standing when the figure steps over it. */
+.figure-in {
+  animation: figure-in 1s var(--ease-out-expo) both;
+  animation-delay: calc(var(--hero-delay) + var(--i, 0) * 0.06s);
+}
+
+@keyframes figure-in {
+  from {
+    opacity: 0;
+    transform: translateY(28px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
