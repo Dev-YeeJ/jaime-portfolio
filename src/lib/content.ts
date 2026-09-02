@@ -473,9 +473,15 @@ export const projects: Project[] = [
       "Reusable multi-source image component",
     ],
     lottieSrc: "/petsy.lottie",
-    // [ ] Paste the GitHub Pages URL for the Petsy landing page between the quotes
-    // below and the "View live" button appears on its own.
-    links: [{ label: "View live", href: "" }],
+    links: [
+      {
+        label: "User manual on Behance",
+        href: "https://www.behance.net/gallery/218837781/Petsy-Application",
+      },
+      // [ ] Paste the GitHub Pages URL for the Petsy landing page between the quotes
+      // below and the "View live" button appears on its own.
+      { label: "View live", href: "" },
+    ],
   },
   {
     slug: "captura",
