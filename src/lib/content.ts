@@ -475,7 +475,7 @@ export const projects: Project[] = [
     lottieSrc: "/petsy.lottie",
     links: [
       {
-        label: "User manual on Behance",
+        label: "View on Behance",
         href: "https://www.behance.net/gallery/218837781/Petsy-Application",
       },
       // [ ] Paste the GitHub Pages URL for the Petsy landing page between the quotes
