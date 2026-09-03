@@ -60,16 +60,17 @@ export const privacy: LegalDocument = {
       ],
     },
     {
-      heading: "What your browser stores",
+      heading: "Cookies and browser storage",
       blocks: [
-        "Two small values, both functional, both kept on your device and never transmitted anywhere:",
+        "This site sets no cookies. None for analytics, none for advertising, and none from the host — a request for any page here comes back without a single `Set-Cookie` header.",
+        "It does keep two small values in your browser's own storage. The rules on this cover anything stored on your device, not only cookies, so both are listed here even though neither is one. Both are functional, both stay on your device, and neither is ever transmitted anywhere:",
         {
           list: [
             "`jy-intro` in session storage — remembers that you have already seen the opening animation, so it plays once per browsing session rather than on every page. It disappears when you close the tab.",
             "`theme` in local storage — written only if you choose light or dark from the theme switch. Without a choice, the site follows your system setting and writes nothing.",
           ],
         },
-        "Neither is a tracking cookie, neither identifies you, and clearing your browser's site data removes both. There is no consent banner because there is nothing to consent to.",
+        "Neither identifies you, neither follows you to another site, and clearing your browser's site data removes both. There is no cookie banner because there is nothing here to consent to — and a banner asking permission for storage that does not exist would be theatre rather than transparency. If that ever changes, this section changes first.",
       ],
     },
     {
