@@ -44,3 +44,7 @@ next-env.d.ts
 .open-next
 .wrangler
 cloudflare-env.d.ts
+
+# design source files kept out of the build and out of git on purpose:
+# the SK profile poster carries family members' names and is not published.
+/design-source

@@ -140,6 +140,21 @@ export const achievements: Achievement[] = [
     year: "S.Y. 2022–2023",
   },
   {
+    title: "Best in Research",
+    detail: "Grade 12, ICT Strand",
+    year: "S.Y. 2022–2023",
+  },
+  {
+    title: "Best in Work Immersion",
+    detail: "Grade 12, ICT Strand",
+    year: "S.Y. 2022–2023",
+  },
+  {
+    title: "Best in TVL-ICT",
+    detail: "Grade 12, ICT Strand",
+    year: "S.Y. 2022–2023",
+  },
+  {
     title: "Students' Leadership Course",
     detail: "UCU Academy — Certificate of Completion",
   },
@@ -487,21 +502,22 @@ export const projects: Project[] = [
     slug: "captura",
     title: "Captura",
     summary:
-      "A booking app concept for photography and videography services, designed around how a shoot actually gets booked.",
+      "A booking app for photography and videography services, built around how a shoot actually gets booked.",
     description:
-      "A Flutter booking app concept for photography and videography services: portfolio browsing, package selection, a booking flow, and contact. The design work went into the order of that flow — portfolio first, because clients decide on the work before they care about the price list.",
-    stack: ["Flutter", "Dart"],
-    lane: "design",
-    status: "Concept",
-    featured: false,
+      "A Flutter and Firebase booking app for photography and videography services: portfolio browsing, package selection, a booking flow, and contact. The work went into the order of that flow — portfolio first, because clients decide on the work before they care about the price list.",
+    stack: ["Flutter", "Dart", "Firebase"],
+    lane: "build",
+    status: "Shipped",
+    featured: true,
     imageLabel: "[ ] Captura — booking flow screens",
     imageRatio: "16/10",
     highlights: [
       "Portfolio browsing, packages, booking flow and contact",
       "Splash-screen pattern reused in this site's intro",
     ],
-    // [ ] Paste the design or Jitter prototype link here to reveal the button.
-    links: [{ label: "View prototype", href: "" }],
+    lottieSrc: "/captura.lottie",
+    // [ ] Paste the repository or live build link here to reveal the button.
+    links: [{ label: "View repository", href: "" }],
   },
   {
     slug: "web-dev-yee",
@@ -526,7 +542,23 @@ export const featuredProjects = projects.filter((p) => p.featured);
 /*  Design gallery                                                             */
 /* -------------------------------------------------------------------------- */
 
-export type DesignItem = { label: string; ratio: string };
+export type DesignItem = {
+  /**
+   * The caption under the tile. A leading "[ ]" marks a slot still waiting on
+   * its asset, so an unfinished gallery documents its own to-do list.
+   */
+  label: string;
+  /** CSS aspect-ratio of the slot, e.g. "5/6", "3/2". */
+  ratio: string;
+  /** Path under /public. Without it the slot renders as a labelled placeholder. */
+  src?: string;
+  /**
+   * Screen-reader description, required whenever `src` is set: `label` is a
+   * caption written for someone who can already see the piece, which makes it
+   * the wrong text for someone who cannot.
+   */
+  alt?: string;
+};
 
 export type DesignCategory = {
   id: string;
@@ -544,6 +576,39 @@ export const designCategories: DesignCategory[] = [
     name: "Campaign Posters",
     blurb: "Event posters and tarpaulins built to be read across a room.",
     items: [
+      /*
+        SK 2023, Team Renz, Barangay Bantug — one campaign, so they lead the
+        category and sit in reading order: the headline poster, the concept
+        piece, the record, then the slate tarpaulin they all hung beside.
+      */
+      {
+        label: "SK 2023 — candidate poster, Team Renz",
+        ratio: "5/6",
+        src: "/campaign/sk-2023/aspiring-kagawad.jpg",
+        alt:
+          "Campaign poster split on a diagonal between deep blue and cyan. A candidate in a blue Team Renz polo stands centre with arms crossed. The left side carries the Tagalog quote “Tara na't isulong ang magandang kinabukasan para sa kabataan”; the right stacks “aspiring”, “SK KAGAWAD” and the name “Jaime Yee”.",
+      },
+      {
+        label: "SK 2023 — youth empowerment poster, built on a J–Y acrostic",
+        ratio: "5/6",
+        src: "/campaign/sk-2023/youth-empowerment.jpg",
+        alt:
+          "Campaign poster headed “Team Renz 2023”. The line “Joined to improve the Youth empowerment” is set so that an enlarged J and Y spell the candidate's initials. A blue name plate below reads “Jaime Yee II, Purok 3” next to the Barangay Bantug seal.",
+      },
+      {
+        label: "SK 2023 — achievements poster",
+        ratio: "5/6",
+        src: "/campaign/sk-2023/achievements.jpg",
+        alt:
+          "Campaign poster titled “Achievements”, listing academic honours grouped by level — college, senior high, junior high, elementary, and trainings — in a column beside a cut-out photo of the candidate in a blue polo.",
+      },
+      {
+        label: "SK 2023 — Team Renz slate tarpaulin",
+        ratio: "3/2",
+        src: "/campaign/sk-2023/team-renz-slate.jpg",
+        alt:
+          "Landscape campaign tarpaulin for Team Renz. Seven candidates in matching blue polos stand across a blue background, each with a name plate and the seat they are running for — one for SK Chairman, six for SK Kagawad — beneath an acrostic slogan spelling RENZ and a repeated “VOTE!” band along the bottom.",
+      },
       { label: "[ ] Tarpaulin — Cluster VI Technolympics 2023 (Champion)", ratio: "3/4" },
       { label: "[ ] Tarpaulin — Division Technolympics 2023 (2nd Place)", ratio: "3/4" },
       { label: "[ ] JITS event poster", ratio: "3/4" },

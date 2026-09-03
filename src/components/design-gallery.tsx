@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import type { DesignCategory } from "@/lib/content";
 import { ImagePlaceholder } from "./image-placeholder";
+import { ImageLightbox } from "./image-lightbox";
 import { FilterChips } from "./filter-chips";
 import { EmptyState } from "./empty-state";
 import { EASE } from "./motion";
@@ -93,7 +94,18 @@ export function DesignGallery({
                   transition={{ duration: 0.35, ease: EASE }}
                 >
                   <div className="lift overflow-hidden rounded-xl border border-border">
-                    <ImagePlaceholder ratio={item.ratio} className="rounded-none border-0" />
+                    {item.src ? (
+                      <ImageLightbox
+                        src={item.src}
+                        alt={item.alt ?? item.label}
+                        title={item.label}
+                        ratio={item.ratio}
+                        /* Mirrors the grid below: 4 up, then 3, then 2. */
+                        sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw"
+                      />
+                    ) : (
+                      <ImagePlaceholder ratio={item.ratio} className="rounded-none border-0" />
+                    )}
                   </div>
                   <p className="mt-2.5 font-mono text-[10px] uppercase tracking-[0.14em] text-accent">
                     {item.category}
