@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Mail, MapPin } from "lucide-react";
+import { legalLinks } from "@/lib/legal";
 import { navLinks, site } from "@/lib/site";
 
 /**
@@ -114,14 +115,30 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-14 flex flex-col gap-2 border-t border-border pt-6 text-[13px] text-muted sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-14 flex flex-col gap-4 border-t border-border pt-6 text-[13px] text-muted sm:flex-row sm:items-center sm:justify-between">
           <p>
             © {year} {site.name}. Built with Next.js.
           </p>
-          <p className="font-mono text-[11px] uppercase tracking-[0.14em]">
-            With great power comes great responsibility.
-          </p>
+
+          {/* Policy pages live down here rather than in the site nav: findable
+              where people look for them, without competing with the work. */}
+          <ul className="flex flex-wrap items-center gap-x-5 gap-y-2">
+            {legalLinks.map((link) => (
+              <li key={link.href}>
+                <Link
+                  href={link.href}
+                  className="link-underline transition-colors hover:text-foreground"
+                >
+                  {link.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
         </div>
+
+        <p className="mt-6 font-mono text-[11px] uppercase tracking-[0.14em] text-muted">
+          With great power comes great responsibility.
+        </p>
       </div>
     </footer>
   );
